@@ -75,19 +75,6 @@ const BADGE_META = {
 };
 const BADGE_CRITERIA_VERSION = 3;
 const ASSETS = {bgm:'BGM.mp3',effect:'effect.mp3',badges:'badges.png'};
-// Starter sightings make the wildlife section immediately useful. The images are
-// real photographs hosted by Wikimedia Commons; full file-page credits live in
-// LIFE_PHOTO_CREDITS.md.
-const LIFE_STARTER_PHOTOS = {
-  o1:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Black-tailed_gull.jpg/960px-Black-tailed_gull.jpg',
-  o2:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Ardea_cinerea_2013-09-16.jpg/960px-Ardea_cinerea_2013-09-16.jpg',
-  o3:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Phalacrocorax_carbo_Vic.jpg/960px-Phalacrocorax_carbo_Vic.jpg',
-  o4:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Mugil_cephalus_Mexico.jpg/960px-Mugil_cephalus_Mexico.jpg',
-  o5:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Snail_and_sea_urchins.jpg/960px-Snail_and_sea_urchins.jpg',
-  o6:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Turbo_cornutus_%28horned_turban_snail%29_1_%2824964935201%29.jpg/960px-Turbo_cornutus_%28horned_turban_snail%29_1_%2824964935201%29.jpg',
-  o7:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Carcinus_maenas.jpg/960px-Carcinus_maenas.jpg',
-  o8:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Amphibalanus_improvisus_90022841.jpg/960px-Amphibalanus_improvisus_90022841.jpg',
-};
 const QUESTS = [
   {id:'first',titleKey:'quest.first.title',hintKey:'quest.first.hint',done:()=>found()>=1},
   {id:'gwangalli3',titleKey:'quest.gwangalli3.title',hintKey:'quest.gwangalli3.hint',done:()=>areaFoundCount('gwangalli')>=3},
@@ -139,10 +126,7 @@ function normalizeBadges(value){
   if(!isRecord(value))return {};
   return Object.fromEntries(Object.entries(value).filter(([id,record])=>AREAS.some(area=>area.id===id)&&isRecord(record)));
 }
-function starterLifeDiscoveries(){
-  return Object.fromEntries(Object.entries(LIFE_STARTER_PHOTOS).map(([id,photo])=>[id,{photo,date:'2026-08-13',areaId:null,copies:[],starter:true}]));
-}
-function blank(){return {profile:null,discoveries:starterLifeDiscoveries(),personal:[],logs:[],badges:{},quests:{viewed:0,claimed:[],pending:null},settings:{sound:true,language:'ko'}}}
+function blank(){return {profile:null,discoveries:{},personal:[],logs:[],badges:{},quests:{viewed:0,claimed:[],pending:null},settings:{sound:true,language:'ko'}}}
 function load(){
   const base=blank();
   try{
@@ -151,7 +135,7 @@ function load(){
     return {
       ...base,
       ...saved,
-      discoveries:{...starterLifeDiscoveries(),...(isRecord(saved.discoveries)?saved.discoveries:{})},
+      discoveries:isRecord(saved.discoveries)?saved.discoveries:{},
       personal:Array.isArray(saved.personal)?saved.personal:[],
       logs:Array.isArray(saved.logs)?saved.logs:[],
       badges:normalizeBadges(saved.badges),
