@@ -190,7 +190,7 @@ function itemFoundInArea(id,areaId){
 function badgeEarnedDate(requiredIds){
   return requiredIds.map(id=>state.discoveries[id]?.date).filter(Boolean).sort().at(-1)||today();
 }
-(){
+function reconcileBadges(){
   if(!isRecord(state.badges))state.badges={};
   const newlyEarned=[];
   AREAS.forEach(area=>{
@@ -661,9 +661,8 @@ function confirmOfficial(){
     }
     existing.copies=[...discoveryCopies(item.id),{photo:draftPhoto,date:today(),areaId:selectedArea?.id||null}];
     state.logs.unshift({id:item.id,date:today(),type:'duplicate'});
-    const newlyEarned=reconcileBadges();
     save();
-    showDiscovery(t('discovery.duplicateCard',{item:itemName(item)}),newlyEarned);
+    showDiscovery(t('discovery.duplicateCard',{item:itemName(item)}));
     draftPhoto=null;
     aiResult=null;
     return;
