@@ -73,7 +73,8 @@ const BADGE_META = {
   ilgwang:{glyph:'☀',stars:3},
   imrang:{glyph:'≈',stars:3},
 };
-const BADGE_CRITERIA_VERSION = 3;
+const BADGE_REQUIREMENTS = {gwangalli:['o16','o45','o47']};
+const BADGE_CRITERIA_VERSION = 4;
 const ASSETS = {bgm:'BGM.mp3',effect:'effect.mp3',badges:'badges.png'};
 const QUESTS = [
   {id:'first',titleKey:'quest.first.title',hintKey:'quest.first.hint',done:()=>found()>=1},
@@ -126,7 +127,10 @@ function normalizeBadges(value){
   if(!isRecord(value))return {};
   return Object.fromEntries(Object.entries(value).filter(([id,record])=>AREAS.some(area=>area.id===id)&&isRecord(record)));
 }
-function blank(){return {profile:null,discoveries:{},personal:[],logs:[],badges:{},quests:{viewed:0,claimed:[],pending:null},settings:{sound:true,language:'ko'}}}
+function starterDiscoveries(){
+  return Object.fromEntries(BADGE_REQUIREMENTS.gwangalli.map(id=>[id,{photo:rewardPlaceholder('quest'),date:'2026-08-13',areaId:'gwangalli',copies:[]}]));
+}
+function blank(){return {profile:null,discoveries:starterDiscoveries(),personal:[],logs:[],badges:{},quests:{viewed:0,claimed:[],pending:null},settings:{sound:true,language:'ko'}}}
 function load(){
   const base=blank();
   try{
@@ -135,7 +139,7 @@ function load(){
     return {
       ...base,
       ...saved,
-      discoveries:isRecord(saved.discoveries)?saved.discoveries:{},
+      discoveries:{...starterDiscoveries(),...(isRecord(saved.discoveries)?saved.discoveries:{})},
       personal:Array.isArray(saved.personal)?saved.personal:[],
       logs:Array.isArray(saved.logs)?saved.logs:[],
       badges:normalizeBadges(saved.badges),
@@ -165,7 +169,7 @@ function areaName(areaOrId){
 function rarityName(id){return RARITY_NAMES[language()]?.[id]??RARITY_NAMES.ko[id]??id}
 function isAreaExclusive(id){return ORIGINAL_EXCLUSIVE_IDS.has(id)}
 function badgeRequiredIds(area){
-  return [...new Set(area.items)].filter(id=>OFFICIAL.some(item=>item.id===id));
+  return BADGE_REQUIREMENTS[area.id]||[...new Set(area.items)].filter(id=>OFFICIAL.some(item=>item.id===id));
 }
 function badgeProgress(area){
   const requiredIds=badgeRequiredIds(area);
